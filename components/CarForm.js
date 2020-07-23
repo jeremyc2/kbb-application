@@ -3,23 +3,22 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 
 export default function CarDetailsForm() {
-
-  var make;
-  var model;
-  var year;
+  const [selectedMake, setSelectedMake] = React.useState('make');
+  const [selectedModel, setSelectedModel] = React.useState('model');
+  const [selectedYear, setSelectedYear] = React.useState('year');
 
   return (
     <View>
       <Card style={styles.card}>
-        <TextInput style={styles.textInput} onChangeText={(text) => make = text} />
+        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedMake(text)} />
         <Text>Make</Text>
-        <TextInput style={styles.textInput} onChangeText={(text) => model = text} />
+        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedModel(text)} />
         <Text>Model</Text>
-        <TextInput style={styles.textInput} onChangeText={(text) => year = text} />
+        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedYear(text)} />
         <Text>Year</Text>
       </Card>
       <Card style={styles.card}>
-        <CarDetailsForm make={make} model={model} year={year} />
+        <CarDetailsForm make={selectedMake} model={selectedModel} year={selectedYear} />
       </Card>
     </View>
   );

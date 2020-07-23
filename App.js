@@ -3,11 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 
 // You can import from local files
-import CarDetailsForm from './components/CarDetailsForm';
 import CarForm from './components/CarForm';
-
-// or any pure javascript modules available in npm
-import { Card } from 'react-native-paper';
 
 export default function App() {
   return (
@@ -31,10 +27,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  card: {
-    backgroundColor: 'gray',
-    padding: 10,
-    marginBottom: 10,
   },
 });

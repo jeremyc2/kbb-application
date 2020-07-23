@@ -13,9 +13,9 @@ export default function CarDetailsForm(props) {
         <TextInput style={styles.textInput} onChangeText={(text) => null} />
         <Text>Year</Text>
       </Card>
-              <Card style={styles.card}>
-          <CarDetailsForm make="kia" model="forte" year="2010" />
-        </Card>
+      <Card style={styles.card}>
+        <CarDetailsForm make="kia" model="forte" year="2010" />
+      </Card>
     </View>
   );
 }

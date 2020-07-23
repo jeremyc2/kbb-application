@@ -64,7 +64,7 @@ export default function CarDetailsForm(props) {
       <Picker
         selectedValue={selectedCondition}
         style={styles.picker}
-        onValueChange={(itemValue, itemIndex) =>
+        onValueChange={(itemValue) =>
           setSelectedCondition(itemValue)
         }>
         {conditions.map((condition) => (
@@ -74,7 +74,7 @@ export default function CarDetailsForm(props) {
       <Picker
         selectedValue={selectedStyle}
         style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setSelectedStyle(itemValue)}>
+        onValueChange={(itemValue) => setSelectedStyle(itemValue)}>
         {stylesList.map((style) => (
           <Picker.Item label={style} value={style} />
         ))}

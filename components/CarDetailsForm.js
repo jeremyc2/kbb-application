@@ -42,6 +42,8 @@ export default function CarDetailsForm(props) {
         console.error(error);
         var url = `https://kbb-quick-search.glitch.me/styles${subUrl}`;
         console.log(`Try with new URL: ${url}`);
+        // TODO: Make one fetch inturrupt the other ones
+        // TODO: The styles erase themselves sometimes
         fetch(url)
           .then((response) => response.json())
           .then((data) => {

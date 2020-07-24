@@ -2,7 +2,9 @@ import * as React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 
-export default function CarDetailsForm() {
+import CarDetailsForm from './CarDetailsForm';
+
+export default function CarForm() {
   const [selectedMake, setSelectedMake] = React.useState('make');
   const [selectedModel, setSelectedModel] = React.useState('model');
   const [selectedYear, setSelectedYear] = React.useState('year');

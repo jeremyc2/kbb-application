@@ -9,7 +9,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>CAR DETAILS</Text>
-      <CarForm></CarForm>
+      <CarForm />
     </View>
   );
 }

@@ -3,12 +3,14 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 
 import CarDetailsForm from './CarDetailsForm';
+import parseStyles from '../parseStyles.js';
 
 export default function CarForm() {
   const [selectedMake, setSelectedMake] = React.useState('make');
   const [selectedModel, setSelectedModel] = React.useState('model');
   const [selectedYear, setSelectedYear] = React.useState('year');
-  const [stylesList, setStylesList] = React.useState('styles');
+
+  var stylesList;
 
   React.useEffect(() => {
 
@@ -39,16 +41,17 @@ export default function CarForm() {
           return;
         }
   
+        console.log(request.responseURL);
         if(request.responseURL.startsWith('https://kbb-quick-search.glitch.me')) {
           if(res == '') {
-            res = '[]'
+            res = '[]';
           }
           res = JSON.parse(res);
-          setStylesList(res);
         } else {
-          var stylesFromKBB = parseStyles(res, `/${selectedMake}/${selectedModel}/${selectedYear}`);
-          setStylesList(stylesFromKBB);
+          res = parseStyles(res, `/${selectedMake}/${selectedModel}/${selectedYear}`);
         }
+
+        stylesList = res;
           
       } else if(request.status === 0) {
   
@@ -80,7 +83,7 @@ export default function CarForm() {
       {selectedMake != 'make' && selectedMake != '' && 
        selectedModel != 'model' && selectedModel != '' && 
        selectedYear != 'year' && selectedYear != '' &&
-       stylesList != 'styles' &&
+       stylesList != null &&
       <Card style={styles.card}>
         <CarDetailsForm generalUrl={`https://www.kbb.com/${selectedMake}/${selectedModel}/${selectedYear}`} styles={stylesList} make={selectedMake} model={selectedModel} year={selectedYear} />
       </Card>}

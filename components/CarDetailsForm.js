@@ -8,7 +8,6 @@ import {
   Linking,
   StyleSheet,
 } from 'react-native';
-import parseStyles from '../parseStyles.js';
 
 export default function CarDetailsForm(props) {
   const [selectedStyle, setSelectedStyle] = React.useState('style');

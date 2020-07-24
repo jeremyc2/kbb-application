@@ -19,7 +19,7 @@ export default function CarDetailsForm(props) {
   const pricetype = 'retail';
   const intent = 'buy-used';
 
-  var conditions = [
+  const conditions = [
     { label: 'excellent', value: 'excellent' },
     { label: 'very good', value: 'very good' },
     { label: 'good', value: 'good' },
@@ -31,8 +31,6 @@ export default function CarDetailsForm(props) {
   const generalUrl = `https://www.kbb.com${subUrl}`;
 
   React.useEffect(() => {
-    setSelectedCondition(conditions[0].value);
-
     fetch(generalUrl)
       .then((response) => response.text())
       .then((data) => parseStyles(data, subUrl))
@@ -52,7 +50,7 @@ export default function CarDetailsForm(props) {
           })
           .catch((error) => console.log(error));
       });
-  }, [conditions, subUrl, generalUrl]);
+  }, [subUrl, generalUrl]);
 
   return (
     <View>
@@ -62,7 +60,7 @@ export default function CarDetailsForm(props) {
       />
       <Text>Mileage</Text>
       <Picker
-        selectedValue={selectedCondition}
+        selectedValue={selectedCondition == 'condition'? conditions[0].value: selectedCondition}
         style={styles.picker}
         onValueChange={(itemValue) =>
           setSelectedCondition(itemValue)

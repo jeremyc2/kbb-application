@@ -35,15 +35,20 @@ export default function CarDetailsForm(props) {
 
     if (request.status === 200) {
 
-      console.log(`Loaded: ${request.responseURL}`);
-
       var res = request.responseText;
 
       if(request.responseURL.startsWith('https://kbb-quick-search.glitch.me')) {
+        if(res == '[]' || res == '') {
+          return;
+        }
         res = JSON.parse(res);
         setStylesList(res);
       } else {
-        setStylesList(parseStyles(res, subUrl));
+        var stylesFromKBB = parseStyles(res, subUrl);
+        if(stylesFromKBB.length == 0) {
+          return;
+        }
+        setStylesList(stylesFromKBB);
       }
       
       setSelectedStyle(stylesList[0]);
@@ -51,7 +56,6 @@ export default function CarDetailsForm(props) {
     } else if(request.status === 0) {
 
       var url = `https://kbb-quick-search.glitch.me/styles${subUrl}`;
-      console.log(`Loading: ${url}`);
 
       request.open('GET', url);
       request.send();
@@ -65,8 +69,6 @@ export default function CarDetailsForm(props) {
   const generalUrl = `https://www.kbb.com${subUrl}`;
 
   function getStyles() {
-
-    console.log(`Loading: ${generalUrl}`);
 
     request.abort();
 
@@ -114,6 +116,7 @@ export default function CarDetailsForm(props) {
             }${
               selectedMileage != 'mileage' ? `&mileage=${selectedMileage}` : ''
             }`;
+            console.log("opening url: " + url);
             Linking.openURL(url);
           }}></Button>
       </View>

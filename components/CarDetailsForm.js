@@ -48,7 +48,7 @@ export default function CarDetailsForm(props) {
             setStylesList(data);
             setSelectedStyle(data[0]);
           })
-          .catch((error) => console.log(error));
+          .catch((error) => {console.log(error); setStylesList(null)});
       });
   }, [subUrl, generalUrl]);
 
@@ -73,7 +73,7 @@ export default function CarDetailsForm(props) {
         selectedValue={selectedStyle}
         style={styles.picker}
         onValueChange={(itemValue) => setSelectedStyle(itemValue)}>
-        {stylesList.map((style, index) => (
+        {stylesList && stylesList.map((style, index) => (
           <Picker.Item key={index} label={style} value={style} />
         ))}
       </Picker>

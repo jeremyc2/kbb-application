@@ -67,16 +67,16 @@ export default function CarDetailsForm(props) {
         onValueChange={(itemValue) =>
           setSelectedCondition(itemValue)
         }>
-        {conditions.map((condition) => (
-          <Picker.Item label={condition.label} value={condition.value} />
+        {conditions.map((condition, index) => (
+          <Picker.Item key={index} label={condition.label} value={condition.value} />
         ))}
       </Picker>
       <Picker
         selectedValue={selectedStyle}
         style={styles.picker}
         onValueChange={(itemValue) => setSelectedStyle(itemValue)}>
-        {stylesList.map((style) => (
-          <Picker.Item label={style} value={style} />
+        {stylesList.map((style, index) => (
+          <Picker.Item key={index} label={style} value={style} />
         ))}
       </Picker>
       <View style={{ marginTop: 10 }}>
@@ -101,8 +101,8 @@ export default function CarDetailsForm(props) {
 
 const styles = StyleSheet.create({
   picker: {
-    backgroundColor: '#72bcd4',
-    color: 'white',
+    backgroundColor: '#f3b50a',
+    color: 'black',
     marginTop: 10,
   },
   button: {

@@ -19,9 +19,12 @@ export default function CarForm() {
         <TextInput style={styles.textInput} onChangeText={(text) => setSelectedYear(text)} />
         <Text>Year</Text>
       </Card>
+      {selectedMake != 'make' && selectedMake != '' && 
+       selectedModel != 'model' && selectedModel != '' && 
+       selectedYear != 'year' && selectedYear != '' &&
       <Card style={styles.card}>
         <CarDetailsForm make={selectedMake} model={selectedModel} year={selectedYear} />
-      </Card>
+      </Card>}
     </View>
   );
 }
@@ -33,8 +36,10 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   card: {
-    backgroundColor: 'gray',
+    backgroundColor: '#f3b50a',
     padding: 10,
     marginBottom: 10,
+    width: 300,
+    alignSelf: 'center',
   },
 });

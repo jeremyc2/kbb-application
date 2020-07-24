@@ -26,33 +26,55 @@ export default function CarDetailsForm(props) {
     { label: 'fair', value: 'fair' },
   ];
 
-  const subUrl = `/${props.make}/${props.model}/${props.year}`;
+  const request = new XMLHttpRequest();
 
+  request.onreadystatechange = (e) => {
+    if (request.readyState !== 4) {
+      return;
+    }
+
+    if (request.status === 200) {
+
+      console.log(`Loaded: ${request.responseURL}`);
+
+      var res = request.responseText;
+
+      if(request.responseURL.startsWith('https://kbb-quick-search.glitch.me')) {
+        res = JSON.parse(res);
+        setStylesList(res);
+      } else {
+        setStylesList(parseStyles(res, subUrl));
+      }
+      
+      setSelectedStyle(stylesList[0]);
+
+    } else if(request.status === 0) {
+
+      var url = `https://kbb-quick-search.glitch.me/styles${subUrl}`;
+      console.log(`Loading: ${url}`);
+
+      request.open('GET', url);
+      request.send();
+
+    } else {
+      console.warn(`${request.status}: ${request.statusText}`);
+    }
+  };
+
+  const subUrl = `/${props.make}/${props.model}/${props.year}`;
   const generalUrl = `https://www.kbb.com${subUrl}`;
 
-  React.useEffect(() => {
-    fetch(generalUrl)
-      .then((response) => response.text())
-      .then((data) => parseStyles(data, subUrl))
-      .then((data) => {
-        setStylesList(data);
-        setSelectedStyle(data[0]);
-      })
-      .catch((error) => {
-        console.error(error);
-        var url = `https://kbb-quick-search.glitch.me/styles${subUrl}`;
-        console.log(`Try with new URL: ${url}`);
-        // TODO: Make one fetch inturrupt the other ones
-        // TODO: The styles erase themselves sometimes
-        fetch(url)
-          .then((response) => response.json())
-          .then((data) => {
-            setStylesList(data);
-            setSelectedStyle(data[0]);
-          })
-          .catch((error) => {console.log(error); setStylesList(null)});
-      });
-  }, [subUrl, generalUrl]);
+  function getStyles() {
+
+    console.log(`Loading: ${generalUrl}`);
+
+    request.abort();
+
+    request.open('GET', generalUrl);
+    request.send();
+  }
+
+  React.useEffect(getStyles, [props.make, props.model, props.year]);
 
   return (
     <View>

@@ -11,7 +11,6 @@ import {
 import parseStyles from '../parseStyles.js';
 
 export default function CarDetailsForm(props) {
-  const [stylesList, setStylesList] = React.useState([]);
   const [selectedStyle, setSelectedStyle] = React.useState('style');
   const [selectedMileage, setSelectedMileage] = React.useState('mileage');
   const [selectedCondition, setSelectedCondition] = React.useState('condition');
@@ -26,58 +25,6 @@ export default function CarDetailsForm(props) {
     { label: 'fair', value: 'fair' },
   ];
 
-  const request = new XMLHttpRequest();
-
-  request.onreadystatechange = (e) => {
-    if (request.readyState !== 4) {
-      return;
-    }
-
-    if (request.status === 200) {
-
-      var res = request.responseText;
-
-      if(request.responseURL.startsWith('https://kbb-quick-search.glitch.me')) {
-        if(res == '[]' || res == '') {
-          return;
-        }
-        res = JSON.parse(res);
-        setStylesList(res);
-      } else {
-        var stylesFromKBB = parseStyles(res, subUrl);
-        if(stylesFromKBB.length == 0) {
-          return;
-        }
-        setStylesList(stylesFromKBB);
-      }
-      
-      setSelectedStyle(stylesList[0]);
-
-    } else if(request.status === 0) {
-
-      var url = `https://kbb-quick-search.glitch.me/styles${subUrl}`;
-
-      request.open('GET', url);
-      request.send();
-
-    } else {
-      console.warn(`${request.status}: ${request.statusText}`);
-    }
-  };
-
-  const subUrl = `/${props.make}/${props.model}/${props.year}`;
-  const generalUrl = `https://www.kbb.com${subUrl}`;
-
-  function getStyles() {
-
-    request.abort();
-
-    request.open('GET', generalUrl);
-    request.send();
-  }
-
-  React.useEffect(getStyles, [props.make, props.model, props.year]);
-
   return (
     <View>
       <TextInput
@@ -86,7 +33,7 @@ export default function CarDetailsForm(props) {
       />
       <Text>Mileage</Text>
       <Picker
-        selectedValue={selectedCondition == 'condition'? conditions[0].value: selectedCondition}
+        selectedValue={selectedCondition == 'condition'? setSelectedCondition(conditions[0].value) && selectedCondition: selectedCondition}
         style={styles.picker}
         onValueChange={(itemValue) =>
           setSelectedCondition(itemValue)
@@ -96,10 +43,10 @@ export default function CarDetailsForm(props) {
         ))}
       </Picker>
       <Picker
-        selectedValue={selectedStyle}
+        selectedValue={selectedStyle == 'style'? setSelectedStyle(props.styles[0]) && selectedStyle: selectedStyle}
         style={styles.picker}
         onValueChange={(itemValue) => setSelectedStyle(itemValue)}>
-        {stylesList && stylesList.map((style, index) => (
+        {props.styles.map((style, index) => (
           <Picker.Item key={index} label={style} value={style} />
         ))}
       </Picker>
@@ -108,15 +55,15 @@ export default function CarDetailsForm(props) {
           title="Open Kelly Bluebook"
           style={styles.button}
           onPress={() => {
-            if (selectedStyle == null || selectedStyle == 'style') return;
-            var url = `${generalUrl}/${selectedStyle}/?pricetype=${pricetype}&intent=${intent}${
+            if(selectedStyle == 'style') return;
+            var url = `${props.generalUrl}/${selectedStyle}/?pricetype=${pricetype}&intent=${intent}${
               selectedCondition != 'condition'
                 ? `&condition=${selectedCondition}`
                 : ''
             }${
               selectedMileage != 'mileage' ? `&mileage=${selectedMileage}` : ''
             }`;
-            console.log("opening url: " + url);
+            console.log("Opening url: " + url);
             Linking.openURL(url);
           }}></Button>
       </View>

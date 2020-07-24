@@ -8,6 +8,64 @@ export default function CarForm() {
   const [selectedMake, setSelectedMake] = React.useState('make');
   const [selectedModel, setSelectedModel] = React.useState('model');
   const [selectedYear, setSelectedYear] = React.useState('year');
+  const [stylesList, setStylesList] = React.useState('styles');
+
+  React.useEffect(() => {
+
+    if(selectedMake == 'make' || selectedModel == 'model' || selectedYear == 'year') {
+      return;
+    }
+
+    const request = new XMLHttpRequest();
+
+    request.make = selectedMake;
+    request.model = selectedModel;
+    request.year = selectedYear;
+
+    request.onreadystatechange = (e) => {
+      if (request.readyState !== 4) {
+        return;
+      }
+  
+      if (request.status === 200) {
+  
+        var res = request.responseText;
+  
+        console.log(`REQUEST: ${request.make}, ${request.model}, ${request.year}`);
+        console.log(`STATE: ${selectedMake}, ${selectedModel}, ${selectedYear}`);
+  
+        if(request.make != selectedMake || request.model != selectedModel || request.year != selectedYear) {
+          console.log("returning");
+          return;
+        }
+  
+        if(request.responseURL.startsWith('https://kbb-quick-search.glitch.me')) {
+          if(res == '') {
+            res = '[]'
+          }
+          res = JSON.parse(res);
+          setStylesList(res);
+        } else {
+          var stylesFromKBB = parseStyles(res, `/${selectedMake}/${selectedModel}/${selectedYear}`);
+          setStylesList(stylesFromKBB);
+        }
+          
+      } else if(request.status === 0) {
+  
+        var url = `https://kbb-quick-search.glitch.me/styles/${selectedMake}/${selectedModel}/${selectedYear}`;
+  
+        request.open('GET', url);
+        request.send();
+  
+      } else {
+        console.warn(`${request.status}: ${request.statusText}`);
+      }
+    };
+
+    request.open('GET', `https://www.kbb.com/${selectedMake}/${selectedModel}/${selectedYear}`);
+    request.send();
+
+  });
 
   return (
     <View>
@@ -22,8 +80,9 @@ export default function CarForm() {
       {selectedMake != 'make' && selectedMake != '' && 
        selectedModel != 'model' && selectedModel != '' && 
        selectedYear != 'year' && selectedYear != '' &&
+       stylesList != 'styles' &&
       <Card style={styles.card}>
-        <CarDetailsForm make={selectedMake} model={selectedModel} year={selectedYear} />
+        <CarDetailsForm generalUrl={`https://www.kbb.com/${selectedMake}/${selectedModel}/${selectedYear}`} styles={stylesList} make={selectedMake} model={selectedModel} year={selectedYear} />
       </Card>}
     </View>
   );

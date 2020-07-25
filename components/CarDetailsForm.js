@@ -19,7 +19,7 @@ export default function CarDetailsForm(props) {
 
   const conditions = [
     { label: 'excellent', value: 'excellent' },
-    { label: 'very good', value: 'very good' },
+    { label: 'very good', value: 'very-good' },
     { label: 'good', value: 'good' },
     { label: 'fair', value: 'fair' },
   ];

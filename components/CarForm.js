@@ -5,12 +5,21 @@ import { Card } from 'react-native-paper';
 import CarDetailsForm from './CarDetailsForm';
 import parseStyles from '../parseStyles.js';
 
+function getRequestID(make, model, year) {
+  return `${make}/${model}/${year}`;
+}
+
+var requestIDState;
+function setRequestIDState(text) {
+  requestIDState = text;
+}
+
 export default function CarForm() {
   const [selectedMake, setSelectedMake] = React.useState('make');
   const [selectedModel, setSelectedModel] = React.useState('model');
   const [selectedYear, setSelectedYear] = React.useState('year');
 
-  var stylesList;
+  const [stylesList, setStylesList] = React.useState('styles');
 
   React.useEffect(() => {
 
@@ -20,42 +29,53 @@ export default function CarForm() {
 
     const request = new XMLHttpRequest();
 
-    request.make = selectedMake;
-    request.model = selectedModel;
-    request.year = selectedYear;
+    request.id = requestIDState;
+    request.reused = false;
 
-    request.onreadystatechange = (e) => {
+    // console.log(`(#1) Make: ${selectedMake}, Model: ${selectedModel}, Year: ${selectedYear}, ReqID: ${request.id}, ReqIDState: ${requestIDState}`);
+
+    request.onreadystatechange = () => {
       if (request.readyState !== 4) {
         return;
       }
   
       if (request.status === 200) {
-  
-        var res = request.responseText;
-  
-        console.log(`REQUEST: ${request.make}, ${request.model}, ${request.year}`);
-        console.log(`STATE: ${selectedMake}, ${selectedModel}, ${selectedYear}`);
-  
-        if(request.make != selectedMake || request.model != selectedModel || request.year != selectedYear) {
-          console.log("returning");
+
+        // console.log(`(#2) Make: ${selectedMake}, Model: ${selectedModel}, Year: ${selectedYear}, ReqID: ${request.id}, ReqIDState: ${requestIDState}`);
+
+        if(requestIDState != request.id){
+          console.log("returning...");
           return;
         }
   
-        console.log(request.responseURL);
+        var res = request.responseText;
+  
         if(request.responseURL.startsWith('https://kbb-quick-search.glitch.me')) {
-          if(res == '') {
-            res = '[]';
+          if(res == '' || res == '[]') {
+              res = null;
+          } else {
+              res = JSON.parse(res);
           }
-          res = JSON.parse(res);
         } else {
-          res = parseStyles(res, `/${selectedMake}/${selectedModel}/${selectedYear}`);
+          res = parseStyles(res, `/${request.id}`);
+          if(res.length == 0)
+            res = null;
         }
-
-        stylesList = res;
+        
+        setStylesList(res);
           
       } else if(request.status === 0) {
+
+        if(request.reused == true) {
+          console.log("We've already reused this request object for new request");
+          return;
+        }
+
+        request.reused = true;
+
+        console.log("New request from API. Request ID = " + request.id);
   
-        var url = `https://kbb-quick-search.glitch.me/styles/${selectedMake}/${selectedModel}/${selectedYear}`;
+        var url = `https://kbb-quick-search.glitch.me/styles/${request.id}`;
   
         request.open('GET', url);
         request.send();
@@ -65,27 +85,27 @@ export default function CarForm() {
       }
     };
 
-    request.open('GET', `https://www.kbb.com/${selectedMake}/${selectedModel}/${selectedYear}`);
+    request.open('GET', `https://www.kbb.com/${request.id}`);
     request.send();
 
-  });
+  }, [selectedMake, selectedModel, selectedYear]);
 
   return (
     <View>
       <Card style={styles.card}>
-        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedMake(text)} />
+        <TextInput style={styles.textInput} onChangeText={(text) => {setRequestIDState(getRequestID(text, selectedModel, selectedYear)); setSelectedMake(text)}} />
         <Text>Make</Text>
-        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedModel(text)} />
+        <TextInput style={styles.textInput} onChangeText={(text) => {setRequestIDState(getRequestID(selectedMake, text, selectedYear)); setSelectedModel(text)}} />
         <Text>Model</Text>
-        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedYear(text)} />
+        <TextInput style={styles.textInput} onChangeText={(text) => {setRequestIDState(getRequestID(selectedMake, selectedModel, text)); setSelectedYear(text)}} />
         <Text>Year</Text>
       </Card>
       {selectedMake != 'make' && selectedMake != '' && 
        selectedModel != 'model' && selectedModel != '' && 
        selectedYear != 'year' && selectedYear != '' &&
-       stylesList != null &&
+       requestIDState != null && stylesList != 'styles' && stylesList != null &&
       <Card style={styles.card}>
-        <CarDetailsForm generalUrl={`https://www.kbb.com/${selectedMake}/${selectedModel}/${selectedYear}`} styles={stylesList} make={selectedMake} model={selectedModel} year={selectedYear} />
+        <CarDetailsForm generalUrl={`https://www.kbb.com/${requestIDState}`} styles={stylesList} make={selectedMake} model={selectedModel} year={selectedYear} />
       </Card>}
     </View>
   );

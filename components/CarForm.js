@@ -52,6 +52,7 @@ export default function CarForm() {
   
         var url = `https://kbb-quick-search.glitch.me/styles${buildPathString()}`;
   
+        // This abort is needed only for android.
         request.abort();
         request.open('GET', url);
         request.send();
@@ -61,6 +62,7 @@ export default function CarForm() {
       }
     };
 
+    // This abort is needed only for android.
     request.abort();
     request.open('GET', `https://www.kbb.com${buildPathString()}`);
     request.send();

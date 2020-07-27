@@ -5,14 +5,7 @@ import { Card } from 'react-native-paper';
 import CarDetailsForm from './CarDetailsForm';
 import parseStyles from '../parseStyles.js';
 
-function getRequestID(make, model, year) {
-  return `${make}/${model}/${year}`;
-}
-
-var requestIDState;
-function setRequestIDState(text) {
-  requestIDState = text;
-}
+const request = new XMLHttpRequest();
 
 export default function CarForm() {
   const [selectedMake, setSelectedMake] = React.useState('make');
@@ -21,18 +14,17 @@ export default function CarForm() {
 
   const [stylesList, setStylesList] = React.useState('styles');
 
+  function buildPathString() {
+    return `/${selectedMake}/${selectedModel}/${selectedYear}`;
+  }
+
   React.useEffect(() => {
 
     if(selectedMake == 'make' || selectedModel == 'model' || selectedYear == 'year') {
       return;
     }
 
-    const request = new XMLHttpRequest();
-
-    request.id = requestIDState;
     request.reused = false;
-
-    // console.log(`(#1) Make: ${selectedMake}, Model: ${selectedModel}, Year: ${selectedYear}, ReqID: ${request.id}, ReqIDState: ${requestIDState}`);
 
     request.onreadystatechange = () => {
       if (request.readyState !== 4) {
@@ -40,13 +32,6 @@ export default function CarForm() {
       }
   
       if (request.status === 200) {
-
-        // console.log(`(#2) Make: ${selectedMake}, Model: ${selectedModel}, Year: ${selectedYear}, ReqID: ${request.id}, ReqIDState: ${requestIDState}`);
-
-        if(requestIDState != request.id){
-          console.log("returning...");
-          return;
-        }
   
         var res = request.responseText;
   
@@ -57,7 +42,7 @@ export default function CarForm() {
               res = JSON.parse(res);
           }
         } else {
-          res = parseStyles(res, `/${request.id}`);
+          res = parseStyles(res, buildPathString());
           if(res.length == 0)
             res = null;
         }
@@ -72,10 +57,8 @@ export default function CarForm() {
         }
 
         request.reused = true;
-
-        console.log("New request from API. Request ID = " + request.id);
   
-        var url = `https://kbb-quick-search.glitch.me/styles/${request.id}`;
+        var url = `https://kbb-quick-search.glitch.me/styles${buildPathString()}`;
   
         request.open('GET', url);
         request.send();
@@ -85,7 +68,7 @@ export default function CarForm() {
       }
     };
 
-    request.open('GET', `https://www.kbb.com/${request.id}`);
+    request.open('GET', `https://www.kbb.com${buildPathString()}`);
     request.send();
 
   }, [selectedMake, selectedModel, selectedYear]);
@@ -93,19 +76,19 @@ export default function CarForm() {
   return (
     <View>
       <Card style={styles.card}>
-        <TextInput style={styles.textInput} onChangeText={(text) => {setRequestIDState(getRequestID(text, selectedModel, selectedYear)); setSelectedMake(text)}} />
+        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedMake(text)} />
         <Text>Make</Text>
-        <TextInput style={styles.textInput} onChangeText={(text) => {setRequestIDState(getRequestID(selectedMake, text, selectedYear)); setSelectedModel(text)}} />
+        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedModel(text)} />
         <Text>Model</Text>
-        <TextInput style={styles.textInput} onChangeText={(text) => {setRequestIDState(getRequestID(selectedMake, selectedModel, text)); setSelectedYear(text)}} />
+        <TextInput style={styles.textInput} onChangeText={(text) => setSelectedYear(text)} />
         <Text>Year</Text>
       </Card>
       {selectedMake != 'make' && selectedMake != '' && 
        selectedModel != 'model' && selectedModel != '' && 
        selectedYear != 'year' && selectedYear != '' &&
-       requestIDState != null && stylesList != 'styles' && stylesList != null &&
+       stylesList != 'styles' && stylesList != null &&
       <Card style={styles.card}>
-        <CarDetailsForm generalUrl={`https://www.kbb.com/${requestIDState}`} styles={stylesList} make={selectedMake} model={selectedModel} year={selectedYear} />
+        <CarDetailsForm generalUrl={`https://www.kbb.com${buildPathString()}`} styles={stylesList} make={selectedMake} model={selectedModel} year={selectedYear} />
       </Card>}
     </View>
   );

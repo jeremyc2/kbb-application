@@ -14,17 +14,16 @@ export default function CarForm() {
 
   const [stylesList, setStylesList] = React.useState('styles');
 
-  function buildPathString() {
+  // keep function reference
+  const buildPathString = React.useCallback(() => {
     return `/${selectedMake}/${selectedModel}/${selectedYear}`;
-  }
+  }, [selectedMake, selectedModel, selectedYear]) 
 
   React.useEffect(() => {
 
     if(selectedMake == 'make' || selectedModel == 'model' || selectedYear == 'year') {
       return;
     }
-
-    request.reused = false;
 
     request.onreadystatechange = () => {
       if (request.readyState !== 4) {
@@ -50,16 +49,10 @@ export default function CarForm() {
         setStylesList(res);
           
       } else if(request.status === 0) {
-
-        if(request.reused == true) {
-          console.log("We've already reused this request object for new request");
-          return;
-        }
-
-        request.reused = true;
   
         var url = `https://kbb-quick-search.glitch.me/styles${buildPathString()}`;
   
+        request.abort();
         request.open('GET', url);
         request.send();
   
@@ -68,10 +61,11 @@ export default function CarForm() {
       }
     };
 
+    request.abort();
     request.open('GET', `https://www.kbb.com${buildPathString()}`);
     request.send();
 
-  }, [selectedMake, selectedModel, selectedYear]);
+  }, [buildPathString, selectedMake, selectedModel, selectedYear]);
 
   return (
     <View>

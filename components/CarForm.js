@@ -50,7 +50,7 @@ export default function CarForm() {
           
       } else if(request.status === 0) {
   
-        var url = `https://kbb-quick-search.glitch.me/styles${buildPathString()}`;
+        var url = `https://kbb-quick-search.glitch.me/styles${buildPathString().toLowerCase()}`;
   
         // This abort is needed only for android.
         request.abort();
@@ -64,7 +64,7 @@ export default function CarForm() {
 
     // This abort is needed only for android.
     request.abort();
-    request.open('GET', `https://www.kbb.com${buildPathString()}`);
+    request.open('GET', `https://www.kbb.com${buildPathString().toLowerCase()}`);
     request.send();
 
   }, [buildPathString, selectedMake, selectedModel, selectedYear]);

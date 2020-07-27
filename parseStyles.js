@@ -1,4 +1,5 @@
 function parseStyles(response, subUrl) {
+
   var regex = new RegExp(`href="${subUrl}/([^/]*)/`, 'g');
 
   var matches = [];
